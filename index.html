@@ -256,7 +256,11 @@
             }
         }
 
-        /* Memory gallery */
+        .gift.open .message {
+            display: none
+        }
+
+        $1
         .gallery {
             display: grid;
             grid-auto-flow: column;
@@ -267,21 +271,21 @@
             padding-bottom: 6px
         }
 
-            .gallery .item {
-                scroll-snap-align: center;
-                position: relative;
-                border-radius: 18px;
-                overflow: hidden;
-                border: 1px solid rgba(0,0,0,.08);
-                background: #fafafa
-            }
+        .gallery .item {
+            scroll-snap-align: center;
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,.08);
+            background: #fafafa
+        }
 
-            .gallery img {
-                display: block;
-                width: 100%;
-                height: 280px;
-                object-fit: cover
-            }
+        .gallery img {
+            display: block;
+            width: 100%;
+            height: 280px;
+            object-fit: cover
+        }
 
         .caption {
             position: absolute;
@@ -346,10 +350,10 @@
     <main class="container">
         <section class="hero">
             <div class="card">
-                <h2 id="lead">Dziś świętujemy Ciebie. Dziękujemy za ciepło, mądre słowa i najpyszniejsze obiady pod słońcem. 🌷</h2>
+                <h2 id="lead">Dziś świętujemy Ciebie. Dziękuję za ciepło, mądre słowa i najpyszniejsze obiady pod słońcem. 🌷</h2>
                 <p class="muted">Przeciągnij w bok w galerii wspomnień, dotknij pudełka, aby odkryć wiadomość, a jeśli chcesz – włącz muzykę.</p>
                 <div class="actions"><button class="btn" id="share">Udostępnij tę stronę</button><button class="btn secondary" id="confettiBtn">Konfetti!</button></div>
-                <p class="note muted" id="from">— od <strong><span id="fromName">Aleksa</span></strong></p>
+                <p class="note muted" id="from">— od <strong><span id="fromName">Aleksandra</span></strong></p>
             </div>
             <div class="card gift" id="gift">
                 <div class="lid"></div>
@@ -385,134 +389,150 @@
     </main>
 
     <script>
-// ======= USTAWIENIA (łatwa personalizacja) =======
-const CONFIG = {
-  MOM_NAME: "Mamo",
-  FROM_NAME: "Aleks",
-  PAGE_TITLE: "Sto lat, Mamo!",
-  TAG_LINE: "Dla Mamy",
+        // ======= USTAWIENIA (łatwa personalizacja) =======
+        const CONFIG = {
+            MOM_NAME: "Mamo",
+            FROM_NAME: "Aleksandra",
+            PAGE_TITLE: "Sto lat, Mamo!",
+            TAG_LINE: "Dla Mamy",
 
-  SHORT_WISH: "Dziękujemy za wszystko: ciepło, wsparcie i poczucie humoru. Niech każdy dzień będzie dla Ciebie lekki i pełen drobnych radości!",
-  SECRET_WISH: "Cokolwiek się dzieje – pamiętaj, że jesteś naszą latarnią. Kochamy Cię.",
-  LONG_WISH: `Kochana ${this?.MOM_NAME || 'Mamo'},\n\nŻyczę Ci zdrowia, spokoju i codziennych momentów, które wywołują uśmiech. Niech spełniają się Twoje marzenia – te małe i te duże – a my zawsze będziemy obok. Dziękujemy za Twoją cierpliwość, dobre słowa i to, że dom jest dzięki Tobie ciepły. Sto lat!`,
+            REVEAL_TITLE: "Najlepsza Mama na świecie", // tytuł po otwarciu prezentu
+            SHORT_WISH: "Dziękuję za wszystko: ciepło, wsparcie i poczucie humoru. Niech każdy dzień będzie dla Ciebie lekki i pełen drobnych radości!",
+            SECRET_WISH: "Cokolwiek się dzieje – pamiętaj, że jesteśmy drużyną. Kocham Cię.",
+            LONG_WISH: `Kochana ${this?.MOM_NAME || 'Mamo'},
 
-  PHOTOS: [
-    // Wklej linki do zdjęć (mogą być z telefonu lub hostingu). Działają też data-URL.
-    // Przykładowe placeholdery (picsum):
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1520975624749-5f4a63f6f3f9?q=80&w=1200&auto=format&fit=crop"
-  ],
+Życzę Ci zdrowia, spokoju i codziennych momentów, które wywołują uśmiech. Niech spełniają się Twoje marzenia – te małe i te duże – a my zawsze będziemy obok. Dziękuję za Twoją cierpliwość, dobre słowa i to, że dom jest dzięki Tobie ciepły. Sto lat!`,
 
-  AUDIO_URL: "", // opcjonalnie: wklej link do mp3 np. z własnego hostingu
-};
+            // Jeśli nie chcesz używać prawdziwych zdjęć, zostaw pustą tablicę – pokażą się ładne, prywatne placeholdery
+            PHOTOS: [],
 
-// ======= LOGIKA APLIKACJI =======
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+            AUDIO_URL: "", // opcjonalnie: wklej link do mp3
+        };
 
-function initText(){
-  document.title = CONFIG.PAGE_TITLE;
-  $('#title').textContent = CONFIG.PAGE_TITLE;
-  $('#tag').textContent = CONFIG.TAG_LINE;
-  $('#fromName').textContent = CONFIG.FROM_NAME;
-  $('#lead').innerHTML = `Dziś świętujemy Ciebie, <strong>${CONFIG.MOM_NAME}</strong>. Dziękujemy za ciepło, mądre słowa i najpyszniejsze obiady pod słońcem. 🌷`;
-  $('#revealTitle').textContent = `Najlepsza ${CONFIG.MOM_NAME} na świecie`;
-  typeText($('#revealText'), CONFIG.SHORT_WISH, 14);
-  $('#longWish').textContent = CONFIG.LONG_WISH.replace(/^Kochana Mamo/, `Kochana ${CONFIG.MOM_NAME}`);
-  if(CONFIG.AUDIO_URL){
-    const a = $('#audio'); a.src = CONFIG.AUDIO_URL;
-  }
+        // ======= LOGIKA APLIKACJI =======
+        const $ = s => document.querySelector(s);
+        const $$ = s => document.querySelectorAll(s);
+
+        function initText() {
+            document.title = CONFIG.PAGE_TITLE;
+            $('#title').textContent = CONFIG.PAGE_TITLE;
+            $('#tag').textContent = CONFIG.TAG_LINE;
+            $('#fromName').textContent = CONFIG.FROM_NAME;
+            $('#lead').innerHTML = `Dziś świętujemy Ciebie, <strong>${CONFIG.MOM_NAME}</strong>. Dziękuję za ciepło, mądre słowa i najpyszniejsze obiady pod słońcem. 🌷`;
+            $('#revealTitle').textContent = (CONFIG.REVEAL_TITLE && CONFIG.REVEAL_TITLE.trim()) || `Najlepsza ${CONFIG.MOM_NAME} na świecie`;
+            typeText($('#revealText'), CONFIG.SHORT_WISH, 14);
+            $('#longWish').textContent = CONFIG.LONG_WISH.replace(/^Kochana Mamo/, `Kochana ${CONFIG.MOM_NAME}`);
+            if (CONFIG.AUDIO_URL) {
+                const a = $('#audio'); a.src = CONFIG.AUDIO_URL;
+            }
+        }
+
+        function buildGallery() {
+            const g = $('#gallery');
+            g.innerHTML = '';
+            const photos = Array.isArray(CONFIG.PHOTOS) ? CONFIG.PHOTOS : [];
+            if (photos.length === 0) {
+                const placeholders = [
+                    { emoji: '💗', caption: 'Najlepsze chwile' },
+                    { emoji: '🌷', caption: 'Dom pełen ciepła' },
+                    { emoji: '🎂', caption: 'Sto lat!' }
+                ];
+                placeholders.forEach((p) => {
+                    const item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerHTML = `<div style="display:grid;place-items:center;height:280px;background:linear-gradient(135deg,#ffe8f1,#e9f3ff);font-size:56px;">${p.emoji}</div><div class="caption">${p.caption}</div>`;
+                    g.appendChild(item);
+                });
+                return;
+            }
+            photos.forEach((src, i) => {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `<img loading="lazy" alt="Wspomnienie ${i + 1}" src="${src}"><div class="caption">Wspomnienie ${i + 1}</div>`;
+                g.appendChild(item);
+            });
+        } " src="${ src } "><div class="caption">Wspomnienie ${i+1}</div>`;
+        g.appendChild(item);
+      });
 }
 
-function buildGallery(){
-  const g = $('#gallery');
-  g.innerHTML = '';
-  CONFIG.PHOTOS.forEach((src,i)=>{
-    const item = document.createElement('div');
-    item.className = 'item';
-    item.innerHTML = `<img loading="lazy" alt="Wspomnienie ${i+1}" src="${src}"><div class="caption">Wspomnienie ${i+1}</div>`;
-    g.appendChild(item);
-  });
-}
+        // Typewriter effect
+        function typeText(el, text, speed = 20) {
+            el.textContent = '';
+            let i = 0; const t = setInterval(() => {
+                el.textContent = text.slice(0, i++);
+                if (i > text.length) { clearInterval(t); el.classList.remove('type'); el.style.borderRight = 'none'; }
+            }, speed);
+        }
 
-// Typewriter effect
-function typeText(el, text, speed=20){
-  el.textContent = '';
-  let i=0; const t = setInterval(()=>{
-    el.textContent = text.slice(0, i++);
-    if(i>text.length){ clearInterval(t); el.classList.remove('type'); el.style.borderRight='none'; }
-  }, speed);
-}
+        // Gift interactions
+        (function giftBox() {
+            const gift = $('#gift');
+            let pressTimer = null, opened = false, secret = false;
 
-// Gift interactions
-(function giftBox(){
-  const gift = $('#gift');
-  let pressTimer=null, opened=false, secret=false;
+            const open = () => { if (opened) return; opened = true; gift.classList.add('open'); boomConfetti(); };
+            const revealSecret = () => { secret = true; typeText($('#revealText'), CONFIG.SECRET_WISH, 16); };
 
-  const open = ()=>{ if(opened) return; opened=true; gift.classList.add('open'); boomConfetti(); };
-  const revealSecret = ()=>{ secret=true; typeText($('#revealText'), CONFIG.SECRET_WISH, 16); };
+            gift.addEventListener('click', () => { if (!secret) open(); });
+            gift.addEventListener('touchstart', startHold, { passive: true });
+            gift.addEventListener('mousedown', startHold);
+            gift.addEventListener('touchend', cancelHold); gift.addEventListener('mouseup', cancelHold); gift.addEventListener('mouseleave', cancelHold);
 
-  gift.addEventListener('click', ()=>{ if(!secret) open(); });
-  gift.addEventListener('touchstart', startHold, {passive:true});
-  gift.addEventListener('mousedown', startHold);
-  gift.addEventListener('touchend', cancelHold); gift.addEventListener('mouseup', cancelHold); gift.addEventListener('mouseleave', cancelHold);
+            function startHold() { pressTimer = setTimeout(() => { if (opened) revealSecret(); else { open(); setTimeout(revealSecret, 300); } }, 650); }
+            function cancelHold() { clearTimeout(pressTimer); }
+        })();
 
-  function startHold(){ pressTimer=setTimeout(()=>{ if(opened) revealSecret(); else {open(); setTimeout(revealSecret, 300);} }, 650); }
-  function cancelHold(){ clearTimeout(pressTimer); }
-})();
+        // Share
+        $('#share').addEventListener('click', async () => {
+            try {
+                if (navigator.share) { await navigator.share({ title: document.title, text: 'Zobacz naszą urodzinową stronę ❤️', url: location.href }); }
+                else { await navigator.clipboard.writeText(location.href); alert('Link skopiowany!'); }
+            } catch (e) { console.log(e); }
+        });
 
-// Share
-$('#share').addEventListener('click', async ()=>{
-  try{
-    if(navigator.share){ await navigator.share({title: document.title, text: 'Zobacz naszą urodzinową stronę ❤️', url: location.href}); }
-    else{ await navigator.clipboard.writeText(location.href); alert('Link skopiowany!'); }
-  }catch(e){ console.log(e); }
-});
+        // Copy wish
+        $('#copyBtn').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText($('#longWish').textContent); alert('Skopiowano życzenia!'); } catch (e) { alert('Nie udało się skopiować.'); }
+        });
 
-// Copy wish
-$('#copyBtn').addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText($('#longWish').textContent); alert('Skopiowano życzenia!'); }catch(e){ alert('Nie udało się skopiować.'); }
-});
+        // Audio controls
+        (function audioCtrl() {
+            const btn = $('#playPause'), a = $('#audio');
+            if (!CONFIG.AUDIO_URL) { btn.disabled = true; btn.textContent = '—'; btn.title = 'Dodaj AUDIO_URL w ustawieniach'; return; }
+            btn.addEventListener('click', async () => {
+                if (a.paused) { await a.play(); btn.textContent = '⏸'; } else { a.pause(); btn.textContent = '▶︎'; }
+            });
+        })();
 
-// Audio controls
-(function audioCtrl(){
-  const btn=$('#playPause'), a=$('#audio');
-  if(!CONFIG.AUDIO_URL){ btn.disabled=true; btn.textContent='—'; btn.title='Dodaj AUDIO_URL w ustawieniach'; return; }
-  btn.addEventListener('click', async ()=>{
-    if(a.paused){ await a.play(); btn.textContent='⏸'; } else { a.pause(); btn.textContent='▶︎'; }
-  });
-})();
+        // Confetti
+        const confetti = document.getElementById('confetti');
+        const ctx = confetti.getContext('2d');
+        let pieces = []; let W = innerWidth, H = innerHeight; confetti.width = W; confetti.height = H;
+        function makePiece() {
+            const colors = ['#ff71a5', '#6cc4a1', '#7aa8ff', '#ffd166', '#06d6a0', '#ef476f'];
+            return { x: Math.random() * W, y: -20 - Math.random() * H, r: 4 + Math.random() * 6, s: 1 + Math.random() * 2.5, a: Math.random() * 360, c: colors[(Math.random() * colors.length) | 0] };
+        }
+        function boomConfetti() {
+            for (let i = 0; i < 120; i++) pieces.push(makePiece());
+        }
+        function tick() {
+            ctx.clearRect(0, 0, W, H);
+            pieces.forEach(p => {
+                p.y += p.s; p.x += Math.sin((p.y + p.a) / 25) * 0.8; p.a += 2;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a * Math.PI / 180);
+                ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r);
+                ctx.restore();
+            });
+            pieces = pieces.filter(p => p.y < H + 20);
+            requestAnimationFrame(tick);
+        }
+        addEventListener('resize', () => { W = innerWidth; H = innerHeight; confetti.width = W; confetti.height = H; });
+        requestAnimationFrame(tick);
+        $('#confettiBtn').addEventListener('click', boomConfetti);
 
-// Confetti
-const confetti = document.getElementById('confetti');
-const ctx = confetti.getContext('2d');
-let pieces=[]; let W=innerWidth, H=innerHeight; confetti.width=W; confetti.height=H;
-function makePiece(){
-  const colors=['#ff71a5','#6cc4a1','#7aa8ff','#ffd166','#06d6a0','#ef476f'];
-  return {x:Math.random()*W, y:-20-Math.random()*H, r:4+Math.random()*6, s:1+Math.random()*2.5, a:Math.random()*360, c:colors[(Math.random()*colors.length)|0]};
-}
-function boomConfetti(){
-  for(let i=0;i<120;i++) pieces.push(makePiece());
-}
-function tick(){
-  ctx.clearRect(0,0,W,H);
-  pieces.forEach(p=>{
-    p.y += p.s; p.x += Math.sin((p.y+p.a)/25)*0.8; p.a+=2;
-    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a*Math.PI/180);
-    ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
-    ctx.restore();
-  });
-  pieces = pieces.filter(p=> p.y < H+20);
-  requestAnimationFrame(tick);
-}
-addEventListener('resize', ()=>{W=innerWidth;H=innerHeight;confetti.width=W;confetti.height=H;});
-requestAnimationFrame(tick);
-$('#confettiBtn').addEventListener('click', boomConfetti);
-
-// Init
-initText();
-buildGallery();
+        // Init
+        initText();
+        buildGallery();
     </script>
 </body>
 </html>
